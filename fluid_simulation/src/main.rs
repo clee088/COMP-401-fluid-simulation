@@ -8,7 +8,7 @@ use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
 use boundary::BoundaryPlugin;
 use camera::CameraPlugin;
-// use debug::DebugPlugin;
+use debug::DebugPlugin;
 use movement::SimulationPlugin;
 use particles::ParticlesPlugin;
 
@@ -20,7 +20,7 @@ fn main() {
         .add_plugins(ShapePlugin)
         .add_plugins(BoundaryPlugin)
         .add_plugins(CameraPlugin)
-        // .add_plugins(DebugPlugin)
+        .add_plugins(DebugPlugin)
         .add_plugins(ParticlesPlugin)
         .add_plugins(SimulationPlugin)
         .run();
