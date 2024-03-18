@@ -126,8 +126,22 @@ fn compute_pressure_force(
     }
 }
 
-fn simulate_particles(time: Res<Time>, mut query: Query<(&mut Velocity, &mut Transform)>) {
-    for (mut velocity, mut transform) in query.iter_mut() {
+fn simulate_particles(
+    time: Res<Time>,
+    mut query: Query<(&mut Velocity, &mut Transform, &mut Handle<ColorMaterial>)>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
+    for (mut velocity, mut transform, material) in query.iter_mut() {
+        if let Some(material) = materials.get_mut(material.as_ref()) {
+            // TODO: Find a better way to create gradient based on velocity.
+            material.color = Color::Rgba {
+                red: velocity.value.abs().max_element() / 8.,
+                green: 0.2,
+                blue: 0.8,
+                alpha: 1.,
+            };
+        }
+
         transform.translation += velocity.value * time.delta_seconds();
 
         let half_bounds_size = BOUNDS / 2.0;
