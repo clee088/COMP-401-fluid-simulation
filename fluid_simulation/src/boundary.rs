@@ -13,7 +13,7 @@ impl Plugin for BoundaryPlugin {
 
 fn spawn_boundary(mut commands: Commands) {
     let rect = shapes::Rectangle {
-        extents: BOUNDS + 2.1, // adding particle size (1) * 2 + stroke size (0.1)
+        extents: BOUNDS + (0.5 * 2.) + 0.1, // adding particle size (1) * 2 + stroke size (0.1)
         ..default()
     };
 

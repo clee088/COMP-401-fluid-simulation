@@ -8,13 +8,18 @@ use bevy::{
     prelude::*,
 };
 
+use crate::movement::Density;
+
 pub struct DebugPlugin;
 
 impl Plugin for DebugPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(FrameTimeDiagnosticsPlugin)
             .add_systems(Startup, setup_fps_counter)
-            .add_systems(Update, (fps_text_update_system, fps_counter_showhide));
+            .add_systems(
+                Update,
+                (fps_text_update_system, fps_counter_showhide, print_position),
+            );
     }
 }
 
@@ -26,12 +31,9 @@ struct FpsRoot;
 #[derive(Component)]
 struct FpsText;
 
-fn print_position(query: Query<(Entity, &Transform)>) {
-    for (entity, transform) in query.iter() {
-        info!(
-            "Entity {:?} is at position {:?},",
-            entity, transform.translation
-        )
+fn print_position(query: Query<(Entity, &Density)>) {
+    for (entity, density) in query.iter() {
+        info!("Entity {:?} has density {:?},", entity, density.value)
     }
 }
 
