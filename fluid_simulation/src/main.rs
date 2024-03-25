@@ -4,6 +4,7 @@ mod cursor;
 mod debug;
 mod movement;
 mod particles;
+mod time;
 
 use bevy::prelude::*;
 use bevy_prototype_lyon::prelude::*;
@@ -13,6 +14,7 @@ use cursor::CursorPlugin;
 use debug::DebugPlugin;
 use movement::SimulationPlugin;
 use particles::ParticlesPlugin;
+use time::TimePlugin;
 
 const BOUNDS: Vec2 = Vec2::new(25.0, 20.0);
 
@@ -23,6 +25,7 @@ fn main() {
         .add_plugins(BoundaryPlugin)
         .add_plugins(CameraPlugin)
         .add_plugins(CursorPlugin)
+        .add_plugins(TimePlugin)
         .add_plugins(DebugPlugin)
         .add_plugins(ParticlesPlugin)
         .add_plugins(SimulationPlugin)

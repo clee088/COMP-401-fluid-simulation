@@ -62,12 +62,12 @@ fn smoothing_kernel_gradient(radius: f32, distance: f32) -> f32 {
 }
 
 fn update_densities(mut query: Query<(&mut Density, &Transform)>) {
-    query.par_iter_mut().for_each(|(mut density, _)| {
+    // query.par_iter_mut().for_each(|(mut density, _)| {
+    // density.value = 0.;
+    // });
+    for (mut density, _) in query.iter_mut() {
         density.value = 0.;
-    });
-    // for (mut density, _) in query.iter_mut() {
-    //     density.value = 0.;
-    // }
+    }
 
     let mut combinations = query.iter_combinations_mut();
     while let Some([(mut density, transform1), (_, transform2)]) = combinations.fetch_next() {

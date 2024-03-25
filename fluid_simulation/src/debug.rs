@@ -23,6 +23,16 @@ impl Plugin for DebugPlugin {
     }
 }
 
+// MARK: Print Debug
+
+fn print_position(query: Query<(Entity, &Density)>) {
+    for (entity, density) in query.iter() {
+        info!("Entity {:?} has density {:?},", entity, density.value)
+    }
+}
+
+// MARK: FPS Counter
+
 /// Marker to find the container entity so we can show/hide the FPS counter
 #[derive(Component)]
 struct FpsRoot;
@@ -30,12 +40,6 @@ struct FpsRoot;
 /// Marker to find the text entity so we can update it
 #[derive(Component)]
 struct FpsText;
-
-fn print_position(query: Query<(Entity, &Density)>) {
-    for (entity, density) in query.iter() {
-        info!("Entity {:?} has density {:?},", entity, density.value)
-    }
-}
 
 fn setup_fps_counter(mut commands: Commands) {
     // create our UI root node
