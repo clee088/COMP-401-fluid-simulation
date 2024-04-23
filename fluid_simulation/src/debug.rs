@@ -16,10 +16,7 @@ impl Plugin for DebugPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(FrameTimeDiagnosticsPlugin)
             .add_systems(Startup, setup_fps_counter)
-            .add_systems(
-                Update,
-                (fps_text_update_system, fps_counter_showhide, print_position),
-            );
+            .add_systems(Update, (fps_text_update_system, fps_counter_showhide));
     }
 }
 

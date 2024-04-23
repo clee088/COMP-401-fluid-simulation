@@ -6,7 +6,7 @@ use crate::BOUNDS;
 
 // const DEFAULT_GRAVITY: f32 = -9.81;
 const DEFAULT_GRAVITY: f32 = 0.0;
-const DAMPENING_FACTOR: f32 = 0.55;
+const DAMPENING_FACTOR: f32 = 0.45;
 pub const SMOOTHING_RADIUS: f32 = 4.;
 const MASS: f32 = 1.0;
 
@@ -35,6 +35,7 @@ impl Plugin for SimulationPlugin {
         app.add_systems(
             Update,
             (
+                reset_densities,
                 update_densities,
                 compute_external_force,
                 compute_pressure_force,
@@ -61,19 +62,21 @@ fn smoothing_kernel_gradient(radius: f32, distance: f32) -> f32 {
     -((45. * (radius - distance).powi(2)) / (PI * radius.powi(6)))
 }
 
-fn update_densities(mut query: Query<(&mut Density, &Transform)>) {
-    // query.par_iter_mut().for_each(|(mut density, _)| {
-    // density.value = 0.;
-    // });
-    for (mut density, _) in query.iter_mut() {
+fn reset_densities(mut query: Query<&mut Density>) {
+    query.par_iter_mut().for_each(|mut density| {
         density.value = 0.;
-    }
+    });
+}
 
+fn update_densities(mut query: Query<(&mut Density, &Transform)>) {
     let mut combinations = query.iter_combinations_mut();
-    while let Some([(mut density, transform1), (_, transform2)]) = combinations.fetch_next() {
+    while let Some([(mut density1, transform1), (mut density2, transform2)]) =
+        combinations.fetch_next()
+    {
         let distance = (transform2.translation - transform1.translation).length();
         let influence = smoothing_kernel(SMOOTHING_RADIUS, distance);
-        density.value += MASS * influence;
+        density1.value += MASS * influence;
+        density2.value += MASS * influence;
     }
 }
 
@@ -103,7 +106,9 @@ fn compute_pressure_force(
 ) {
     let mut combinations = particles_q.iter_combinations_mut();
 
-    while let Some([(density, t1, mut velocity), (d2, t2, mut v2)]) = combinations.fetch_next() {
+    while let Some([(density, t1, mut velocity1), (d2, t2, mut velocity2)]) =
+        combinations.fetch_next()
+    {
         if density.value == 0. {
             continue;
         }
@@ -122,7 +127,8 @@ fn compute_pressure_force(
         pressure_force *= -(shared_pressure * gradient * MASS);
         // F = MA => A = F / M
         let acceleration = pressure_force / MASS;
-        velocity.value += acceleration * time.delta_seconds();
+        velocity1.value += acceleration * time.delta_seconds();
+        velocity2.value -= acceleration * time.delta_seconds();
     }
 }
 
